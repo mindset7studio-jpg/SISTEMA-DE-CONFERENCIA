@@ -44,7 +44,7 @@ atual em [`docs/ARQUITETURA.md`](docs/ARQUITETURA.md).
    firebase init
    ```
    - Marque **Firestore** e **Hosting** (setas + espaço pra marcar, enter pra confirmar)
-   - Escolha "Use an existing project" → selecione `portal-conferencia`
+   - Escolha "Use an existing project" → selecione `portal-de-conferencia`
      (o mesmo projeto que você já usa)
    - Quando perguntar o arquivo de regras: aponte para `firebase/firestore.rules`
    - Quando perguntar a pasta pública (hosting): digite `public`
