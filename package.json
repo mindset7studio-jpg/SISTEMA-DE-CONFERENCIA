@@ -4,7 +4,7 @@
   "description": "Portal de Conferência de Entregas - Mindset7 Studio",
   "main": "electron/main.js",
   "scripts": {
-    "start": "electron .",
+    "start": "set ELECTRON_RUN_AS_NODE=&& electron .",
     "build": "electron-builder",
     "firebase:deploy": "firebase deploy --only hosting",
     "firebase:deploy:rules": "firebase deploy --only firestore:rules"
