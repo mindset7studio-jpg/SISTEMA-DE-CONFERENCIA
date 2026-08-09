@@ -1,20 +1,65 @@
-# Portal de Conferência Oficial
+# Portal de Conferencia de Entregas
 
-Portal web/desktop para conferência de entregas, com painel de operação, sincronização com Firebase e relatórios de execução.
+Sistema web/desktop para conferencia de entregas, acompanhamento operacional, ocorrencias, historico, relatorios e sincronizacao com Firebase.
 
 ## Tecnologias
 
 - HTML, CSS e JavaScript vanilla
-- Firebase Hosting / Firestore
-- Electron para desktop
-- Firebase admin/client SDK
+- Electron para app desktop
+- Firebase Hosting, Authentication anonima e Firestore
+- Gemini API para o assistente de IA
+- Chart.js e SheetJS via CDN
 
-## Execução local
+## Requisitos
+
+- Node.js 20 ou superior
+- npm
+- Projeto Firebase configurado
+- Firebase CLI para deploy
+
+## Instalacao
 
 ```bash
 npm install
+```
+
+## Execucao local
+
+```bash
 npm start
 ```
+
+O comando abre o app no Electron.
+
+## Configuracao local
+
+Arquivos reais de chave nao devem ir para o Git. Crie os arquivos locais a partir dos exemplos:
+
+```text
+public/js/firebase-keys.local.example.js -> public/js/firebase-keys.local.js
+public/js/gemini-keys.local.example.js   -> public/js/gemini-keys.local.js
+.firebaserc.example                      -> .firebaserc
+```
+
+Depois preencha:
+
+- `firebase-keys.local.js` com as variaveis `window.__FB_*` do app Firebase Web.
+- `gemini-keys.local.js` com `window.__GEMINI_API_KEY__`.
+- `.firebaserc` com o ID real do projeto Firebase.
+
+Esses arquivos estao protegidos pelo `.gitignore`.
+
+## Scripts
+
+```bash
+npm start
+npm run build:dir
+npm run build
+npm run firebase:deploy
+npm run firebase:deploy:rules
+```
+
+Use `npm run build:dir` para validar o pacote Electron sem gerar instalador. Use `npm run build` para gerar o instalador Windows via NSIS.
 
 ## Deploy Firebase
 
@@ -22,6 +67,32 @@ npm start
 npm run firebase:deploy
 ```
 
-## Observações
+Para publicar regras do Firestore:
 
-Os arquivos com chaves locais e configurações sensíveis devem ficar fora do Git. Os arquivos de exemplo e as variáveis compatíveis com `window.__FB_*` estão nos scripts públicos.
+```bash
+npm run firebase:deploy:rules
+```
+
+## Estrutura
+
+```text
+public/       Frontend do sistema
+public/js/    Modulos JavaScript da aplicacao
+public/css/   Estilos
+electron/     Processo principal e preload do Electron
+firebase/     Regras e indices do Firestore
+docs/         Documentacao tecnica
+```
+
+## Seguranca
+
+Antes de fazer commit, confirme que os arquivos abaixo nao aparecem no Git:
+
+```text
+.firebaserc
+public/js/firebase-keys.local.js
+public/js/gemini-keys.local.js
+.env
+```
+
+Use `git status --ignored --short` para revisar arquivos ignorados.

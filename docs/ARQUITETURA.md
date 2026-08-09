@@ -80,6 +80,8 @@ No `public/index.html`, os scripts são carregados nesta ordem, no fim do `<body
 ```html
 <script src="js/firebase-keys.local.js"></script>
 <script src="js/firebase-config.js"></script>
+<script src="js/gemini-keys.local.js"></script>
+<script src="js/gemini-client.js"></script>
 <script src="js/state.js"></script>
 <script src="js/ui-dashboard.js"></script>
 <script src="js/occurrence-types.js"></script>
@@ -91,6 +93,7 @@ No `public/index.html`, os scripts são carregados nesta ordem, no fim do `<body
 <script src="js/ui-reports.js"></script>
 <script src="js/dark-mode.js"></script>
 <script src="js/ui-retidos-cargas.js"></script>
+<script src="js/gemini-assistant.js"></script>
 <script src="js/app-init.js"></script>
 ```
 

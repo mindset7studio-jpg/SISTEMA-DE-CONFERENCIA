@@ -5,6 +5,7 @@
   "main": "electron/main.js",
   "scripts": {
     "start": "set ELECTRON_RUN_AS_NODE=&& electron .",
+    "build:dir": "electron-builder --dir",
     "build": "electron-builder",
     "firebase:deploy": "firebase deploy --only hosting",
     "firebase:deploy:rules": "firebase deploy --only firestore:rules"
