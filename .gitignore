@@ -1,0 +1,23 @@
+# Dependências e artefatos locais
+node_modules/
+dist/
+.DS_Store
+*.log
+
+# Firebase / deploy local
+.firebase/
+.firebaserc
+.firebaserc.local
+firebase-debug.log*
+
+# Chaves e segredos locais
+*.local.js
+*.local.json
+.env
+.env.*
+
+# Build outputs
+coverage/
+.vite/
+out/
+
