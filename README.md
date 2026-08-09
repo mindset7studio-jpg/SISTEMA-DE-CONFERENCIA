@@ -61,6 +61,17 @@ npm run firebase:deploy:rules
 
 Use `npm run build:dir` para validar o pacote Electron sem gerar instalador. Use `npm run build` para gerar o instalador Windows via NSIS.
 
+## Integracao Alfa
+
+A automacao inicial com o portal da Alfa fica em:
+
+```text
+integrations/tampermonkey/alfa-entregas-sync.user.js
+docs/INTEGRACAO-ALFA.md
+```
+
+O script Tampermonkey coleta a tela de Placas de Entregas, le os links `Ver entregas`, grava um snapshot em `alfaEntregas/{AAAA-MM-DD_231}` no Firestore e o portal carrega esses dados automaticamente.
+
 ## Deploy Firebase
 
 ```bash

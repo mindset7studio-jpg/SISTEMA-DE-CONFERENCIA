@@ -13,6 +13,7 @@ firebase-debug.log*
 # Chaves e segredos locais
 *.local.js
 *.local.json
+*.local.user.js
 .env
 .env.*
 

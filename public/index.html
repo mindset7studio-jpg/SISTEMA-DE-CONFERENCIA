@@ -410,6 +410,9 @@
       <button class="btn btn-primary btn-lg" onclick="document.getElementById('fileInput').click()">
         📂 Selecionar arquivo Excel
       </button>
+      <button class="btn btn-outline btn-lg" onclick="window.alfaLoadToday && window.alfaLoadToday()">
+        Carregar dados Alfa
+      </button>
       <input type="file" id="fileInput" accept=".xlsx,.xls" onchange="loadFile(this.files[0])">
     </div>
   </div>
@@ -1033,6 +1036,7 @@
 <script src="js/ui-reports.js"></script>
 <script src="js/dark-mode.js"></script>
 <script src="js/ui-retidos-cargas.js"></script>
+<script src="js/alfa-integration.js"></script>
 <script src="js/gemini-assistant.js"></script>
 <script src="js/app-init.js"></script>
 
