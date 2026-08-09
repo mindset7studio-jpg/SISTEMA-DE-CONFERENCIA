@@ -44,6 +44,7 @@ public/js/gemini-keys.local.example.js   -> public/js/gemini-keys.local.js
 Depois preencha:
 
 - `firebase-keys.local.js` com as variaveis `window.__FB_*` do app Firebase Web.
+- `firebase-keys.web.js` contem a configuracao publica usada pelo portal hospedado.
 - `gemini-keys.local.js` com `window.__GEMINI_API_KEY__`.
 - `.firebaserc` com o ID real do projeto Firebase.
 
