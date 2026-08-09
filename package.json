@@ -9,6 +9,30 @@
     "firebase:deploy": "firebase deploy --only hosting",
     "firebase:deploy:rules": "firebase deploy --only firestore:rules"
   },
+  "build": {
+    "appId": "com.mindset7.portal-conferencia",
+    "productName": "Portal de Conferência",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "electron/**/*.js",
+      "public/**/*",
+      "package.json",
+      "node_modules/**/*"
+    ],
+    "win": {
+      "target": "nsis",
+      "artifactName": "portal-conferencia-${version}-setup.exe",
+      "requestedExecutionLevel": "asInvoker"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
+  },
   "author": "Mindset7 Studio",
   "license": "UNLICENSED",
   "devDependencies": {

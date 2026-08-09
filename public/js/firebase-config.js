@@ -65,14 +65,18 @@
   }
   window.setSyncStatus = setSyncStatus;
 
-  /* ── SAVE TODAY ── */
-  window.fbSaveToday = async function(rows) {
+  /* ── SAVE TODAY ──
+     customKey (opcional): usado pelo "Salvar como" para gravar um snapshot
+     separado sem sobrescrever o documento do dia corrente. Quando omitido,
+     comportamento é idêntico ao original (doc = data de hoje). */
+  window.fbSaveToday = async function(rows, customKey, extra) {
     if(!fbDB || !rows || !rows.length) return;
     try {
       setSyncStatus('syncing');
-      const key = window.todayKey ? window.todayKey() : new Date().toISOString().slice(0,10);
+      const key = customKey || (window.todayKey ? window.todayKey() : new Date().toISOString().slice(0,10));
       await fbDB.collection('conferencias').doc(key).set({
-        date: key, rows: rows, saved: new Date().toISOString()
+        date: (extra && extra.date) || key, rows: rows, saved: new Date().toISOString(),
+        ...(extra || {})
       });
       setSyncStatus('synced');
     } catch(e) {

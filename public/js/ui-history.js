@@ -101,6 +101,45 @@ function loadDB()   { try { return JSON.parse(localStorage.getItem(DB_KEY)||'{}'
 function saveDB(db) { localStorage.setItem(DB_KEY, JSON.stringify(db)); }
 
 /* ══════════════════════════════════════════════════════
+   SALVAR COMO — cria um snapshot separado sem sobrescrever
+   o registro "vivo" do dia (usado pelo saveDay/autosave).
+   Cada clique gera uma chave única: "<data>__<timestamp>".
+══════════════════════════════════════════════════════ */
+function saveDayAs() {
+  if(!rows.length) { toast('Nenhum dado para salvar.','t-red'); return; }
+  const input = document.getElementById('saveAsLabel');
+  if(input) input.value = '';
+  openModal('modalSaveAs');
+  if(input) setTimeout(() => input.focus(), 50);
+}
+
+function confirmSaveDayAs() {
+  if(!rows.length) { toast('Nenhum dado para salvar.','t-red'); return; }
+  const labelInput = document.getElementById('saveAsLabel');
+  const label = labelInput ? labelInput.value.trim() : '';
+  if(!label) { toast('Dê um nome para esse salvamento (ex: "Turno Manhã").','t-amber'); return; }
+
+  const dayKey = todayKey();
+  const key    = `${dayKey}__${Date.now()}`;
+  const rowsNorm = rows.map(r => ({
+    ...r,
+    statusPrestacao: r.statusPrestacao || r.status || ''
+  }));
+  const entry = { date: dayKey, rows: rowsNorm, saved: new Date().toISOString(), label };
+
+  // local
+  const dbLocal = loadDB();
+  dbLocal[key] = entry;
+  saveDB(dbLocal);
+
+  // cloud — mesma chave única, não mexe no documento "todayKey()" normal
+  if(window.fbSaveToday) window.fbSaveToday(rowsNorm, key, { date: dayKey, label });
+
+  closeModal('modalSaveAs');
+  toast(`✅ Salvamento "${label}" criado!`,'t-green');
+}
+
+/* ══════════════════════════════════════════════════════
    HISTORY
 ══════════════════════════════════════════════════════ */
 async function renderHistory() {
@@ -125,21 +164,25 @@ async function renderHistory() {
     return;
   }
   grid.innerHTML = keys.map(k => {
-    const rec  = dbData[k];
+    const rec     = dbData[k];
+    // compatível com registros antigos (chave = data pura) e novos ("data__timestamp")
+    const dateStr = rec.date || k.split('__')[0];
     const tots = rec.rows.reduce((a,r) => ({
       ctes:  a.ctes  + (r.ctes||0),
       ocorr: a.ocorr + ((r.occCodes&&r.occCodes.length)?1:0),
     }), {ctes:0,ocorr:0});
     const ret  = rec.rows.filter(r => r.statusPrestacao === 'Retornou' || r.status === 'Retornou').length;
-    const d    = new Date(k+'T12:00:00');
+    const d    = new Date(dateStr+'T12:00:00');
     const dd   = d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'});
     const wk   = d.toLocaleDateString('pt-BR',{weekday:'long'});
+    const hora = rec.saved ? new Date(rec.saved).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) : '';
+    const labelChip = rec.label ? `<span class="chip chip-blue">🏷️ ${escHtml(rec.label)}</span>` : '';
     return `
     <div class="hist-card" onclick="loadHistEntry('${k}', ${JSON.stringify(rec).replace(/"/g,'&quot;')})">
       <div class="hist-card-top">
         <div>
-          <div class="hist-date">${dd}</div>
-          <div class="hist-weekday">${wk}</div>
+          <div class="hist-date">${dd}${hora ? ` <span style="font-weight:500;color:var(--text3);font-size:12px">${hora}</span>` : ''}</div>
+          <div class="hist-weekday">${wk}${rec.label ? ` · ${escHtml(rec.label)}` : ''}</div>
         </div>
         <button class="hist-del-btn" onclick="event.stopPropagation();askDeleteHist('${k}')">🗑</button>
       </div>
@@ -148,6 +191,7 @@ async function renderHistory() {
         <span class="chip chip-green">✅ ${ret} retornaram</span>
         <span class="chip chip-amber">⚠️ ${tots.ocorr} ocorr.</span>
         <span class="chip chip-blue">${rec.rows.length} motoristas</span>
+        ${labelChip}
       </div>
     </div>`;
   }).join('');
