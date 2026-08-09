@@ -16,5 +16,37 @@ service cloud.firestore {
     match /alfaEntregas/{docId} {
       allow read, write: if request.auth != null;
     }
+
+    // Modelo operacional v2: dias, motoristas e CTEs detalhados por subcolecao.
+    match /operacaoDias/{dayId} {
+      allow read, write: if request.auth != null;
+
+      match /motoristas/{driverId} {
+        allow read, write: if request.auth != null;
+      }
+
+      match /ctes/{cteId} {
+        allow read, write: if request.auth != null;
+      }
+    }
+
+    // Cadastro operacional de motoristas.
+    match /motoristas/{driverId} {
+      allow read, write: if request.auth != null;
+    }
+
+    // CTEs retidos normalizados.
+    match /retidos/{cteId} {
+      allow read, write: if request.auth != null;
+    }
+
+    // Dados brutos/normalizados de integracoes externas.
+    match /integracoes/{integrationId} {
+      allow read, write: if request.auth != null;
+
+      match /dias/{dayId} {
+        allow read, write: if request.auth != null;
+      }
+    }
   }
 }

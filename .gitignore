@@ -22,3 +22,6 @@ coverage/
 .vite/
 out/
 
+# Backups locais do Firestore
+backups/
+

@@ -56,6 +56,10 @@ Esses arquivos estao protegidos pelo `.gitignore`.
 npm start
 npm run build:dir
 npm run build
+npm run db:backup
+npm run db:diagnose
+npm run db:migrate:v2
+npm run db:validate:v2
 npm run firebase:deploy
 npm run firebase:deploy:rules
 ```
@@ -81,6 +85,25 @@ O modulo de WhatsApp gera mensagens prontas para motoristas com mais de 5 CTEs p
 docs/WHATSAPP-OPERACIONAL.md
 ```
 
+## Banco de dados
+
+Ferramentas locais para backup, diagnostico e migracao segura do Firestore:
+
+```bash
+npm run db:backup
+npm run db:diagnose
+npm run db:migrate:v2
+npm run db:validate:v2
+```
+
+O comando de migracao roda em modo simulacao por padrao. Para escrever a estrutura v2 no Firestore, use:
+
+```bash
+npm run db:migrate:v2 -- --write
+```
+
+Detalhes em `docs/MODELO-BANCO-V2.md`.
+
 ## Deploy Firebase
 
 ```bash
@@ -91,6 +114,12 @@ Para publicar regras do Firestore:
 
 ```bash
 npm run firebase:deploy:rules
+```
+
+Para publicar regras no projeto de dados usado pelo portal:
+
+```bash
+npm run firebase:deploy:rules:data
 ```
 
 ## Estrutura

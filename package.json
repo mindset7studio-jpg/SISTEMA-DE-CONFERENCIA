@@ -7,8 +7,13 @@
     "start": "set ELECTRON_RUN_AS_NODE=&& electron .",
     "build:dir": "electron-builder --dir",
     "build": "electron-builder",
+    "db:backup": "node tools/db/backup.cjs",
+    "db:diagnose": "node tools/db/diagnose.cjs",
+    "db:migrate:v2": "node tools/db/migrate-v2.cjs",
+    "db:validate:v2": "node tools/db/validate-v2.cjs",
     "firebase:deploy": "firebase deploy --only hosting",
-    "firebase:deploy:rules": "firebase deploy --only firestore:rules"
+    "firebase:deploy:rules": "firebase deploy --only firestore:rules",
+    "firebase:deploy:rules:data": "firebase --project sistema-de-conferencia-fd247 deploy --only firestore:rules"
   },
   "build": {
     "appId": "com.mindset7.portal-conferencia",
