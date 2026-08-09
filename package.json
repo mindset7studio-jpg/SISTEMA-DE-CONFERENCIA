@@ -1,6 +1,6 @@
 {
   "name": "portal-conferencia-entregas",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Portal de Conferência de Entregas - Mindset7 Studio",
   "main": "electron/main.js",
   "scripts": {

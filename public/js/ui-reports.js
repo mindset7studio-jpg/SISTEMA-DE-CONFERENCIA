@@ -143,6 +143,7 @@ function renderPendentes() {
     tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:48px;color:var(--text3)">📂 Carregue uma conferência primeiro.</td></tr>`;
     resumo.textContent = '';
     totalDiv.innerHTML = '';
+    if(typeof renderWhatsAppAlerts === 'function') renderWhatsAppAlerts();
     return;
   }
 
@@ -180,6 +181,7 @@ function renderPendentes() {
 
   if(!pendentes.length) {
     tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:48px;color:var(--green);font-weight:700">✅ Todos os motoristas estão em dia!</td></tr>`;
+    if(typeof renderWhatsAppAlerts === 'function') renderWhatsAppAlerts();
     return;
   }
 
@@ -193,6 +195,8 @@ function renderPendentes() {
       <td><span style="font-weight:800;color:var(--red);font-size:16px">${r.pendQtd}</span></td>
     </tr>
   `).join('');
+  if(typeof renderWhatsAppAlerts === 'function') renderWhatsAppAlerts();
+  if(typeof maybeShowScheduledWhatsAppAlert === 'function') maybeShowScheduledWhatsAppAlert();
 }
 
 /* ══════════════════════════════════════════════════════
@@ -320,4 +324,3 @@ function renderMgrDashboard() {
     options:{responsive:true,maintainAspectRatio:false,scales:{x:{stacked:true},y:{stacked:true,grid:{color:'rgba(0,0,0,.04)'}}},plugins:{legend:{position:'bottom'}}}
   });
 }
-

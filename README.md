@@ -73,6 +73,14 @@ docs/INTEGRACAO-ALFA.md
 
 O script Tampermonkey coleta a tela de Placas de Entregas, le os links `Ver entregas`, grava um snapshot em `alfaEntregas/{AAAA-MM-DD_231}` no Firestore e o portal carrega esses dados automaticamente.
 
+## WhatsApp Operacional
+
+O modulo de WhatsApp gera mensagens prontas para motoristas com mais de 5 CTEs pendentes, sem envio automatico por API. A documentacao fica em:
+
+```text
+docs/WHATSAPP-OPERACIONAL.md
+```
+
 ## Deploy Firebase
 
 ```bash

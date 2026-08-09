@@ -199,17 +199,17 @@ function saveCadMotorista() {
   const nome    = document.getElementById('cadNome').value.trim();
   const cpf     = document.getElementById('cadCpf').value.trim();
   const placa   = document.getElementById('cadPlaca').value.trim().toUpperCase();
-  const celular = document.getElementById('cadCelular').value.trim();
+  const celularRaw = document.getElementById('cadCelular').value.trim();
+  const celular = typeof normalizeWhatsApp === 'function' ? normalizeWhatsApp(celularRaw) : celularRaw;
   const editId  = document.getElementById('cadEditId').value;
   const errEl   = document.getElementById('cadFormError');
 
   errEl.style.display='none';
   if(!nome) { errEl.textContent='Informe o nome do motorista.'; errEl.style.display='block'; return; }
-  if(!cpf)  { errEl.textContent='Informe o CPF.'; errEl.style.display='block'; return; }
-  if(!validateCPF(cpf)) { errEl.textContent='CPF inválido.'; errEl.style.display='block'; return; }
+  if(cpf && !validateCPF(cpf)) { errEl.textContent='CPF inválido.'; errEl.style.display='block'; return; }
 
   const db = loadCadDB();
-  const dupCPF = db.find(d => d.cpf === cpf && d.id !== (editId||null));
+  const dupCPF = cpf ? db.find(d => d.cpf === cpf && d.id !== (editId||null)) : null;
   if(dupCPF) { errEl.textContent='CPF já cadastrado.'; errEl.style.display='block'; return; }
 
   if(editId) {
@@ -254,7 +254,7 @@ function deleteCadMotorista(id) {
 
 function renderCadMotoristas() {
   const q  = (document.getElementById('cadMotoristasSearch')?.value||'').toLowerCase();
-  const db = loadCadDB().filter(d => !q || d.nome.toLowerCase().includes(q) || d.cpf.includes(q) || d.placa.toLowerCase().includes(q));
+  const db = loadCadDB().filter(d => !q || d.nome.toLowerCase().includes(q) || (d.cpf||'').includes(q) || (d.placa||'').toLowerCase().includes(q) || (d.celular||'').includes(q));
   const tbody = document.getElementById('cadMotoristasBody');
   if(!db.length) {
     tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:48px;color:var(--text3)">${loadCadDB().length ? '🔍 Nenhum resultado para a busca.' : '📋 Nenhum motorista cadastrado ainda.'}</td></tr>`;
@@ -264,9 +264,9 @@ function renderCadMotoristas() {
     <tr>
       <td><span class="rank">${i+1}</span></td>
       <td><span class="driver-name">${escHtml(d.nome)}</span></td>
-      <td><span style="font-size:12px;color:var(--text2);font-weight:600">${escHtml(d.cpf)}</span></td>
+      <td><span style="font-size:12px;color:var(--text2);font-weight:600">${escHtml(d.cpf||'—')}</span></td>
       <td><span class="plate">${escHtml(d.placa||'—')}</span></td>
-      <td><span style="font-size:12px;color:var(--text2)">${escHtml(d.celular||'—')}</span></td>
+      <td><span style="font-size:12px;color:var(--text2)">${escHtml(typeof formatPhone === 'function' ? formatPhone(d.celular) : (d.celular||'—'))}</span></td>
       <td style="display:flex;gap:6px">
         <button class="btn btn-outline btn-sm" onclick="editCadMotorista('${d.id}')">✏️ Editar</button>
         <button class="btn btn-red btn-sm" onclick="deleteCadMotorista('${d.id}')">🗑️</button>
@@ -274,4 +274,3 @@ function renderCadMotoristas() {
     </tr>
   `).join('');
 }
-
