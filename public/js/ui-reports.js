@@ -262,6 +262,12 @@ let chartMgrPie=null, chartMgrBar=null, chartMgrStacked=null;
 
 function renderMgrDashboard() {
   if(!rows.length) {
+    const summary = document.getElementById('mgrSummary');
+    const attention = document.getElementById('mgrAttentionBody');
+    const best = document.getElementById('mgrBestBody');
+    if(summary) summary.innerHTML = '';
+    if(attention) attention.innerHTML = '';
+    if(best) best.innerHTML = '';
     document.getElementById('mgrKpis').innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:48px;color:var(--text3)">📂 Carregue uma conferência primeiro.</div>`;
     return;
   }
@@ -269,11 +275,24 @@ function renderMgrDashboard() {
   const s = calcStats();
   const allData = rows.map(r => {
     const real = getRowRealizadas(r);
-    return {...r, realizadas:real, prod: r.ctes>0?(real/r.ctes)*100:0};
+    const pendentes = Math.max(0, (r.ctes||0) - real);
+    const occQtd = (r.occCodes||[]).length;
+    return {...r, realizadas:real, pendentes, occQtd, prod: r.ctes>0?(real/r.ctes)*100:0};
   });
   const bestDriver = [...allData].sort((a,b)=>b.prod-a.prod)[0];
   const mostVolume = [...allData].sort((a,b)=>b.ctes-a.ctes)[0];
   const avgProd = allData.length ? (allData.reduce((sum,r)=>sum+r.prod,0)/allData.length).toFixed(1) : 0;
+  const totalPendentes = Math.max(0, s.totalCTEs - s.totalRealizadas);
+  const pctConcl = s.totalCTEs > 0 ? (s.totalRealizadas / s.totalCTEs) * 100 : 0;
+  const occTotal = allData.reduce((sum,r)=>sum+r.occQtd,0);
+  const avgCtes = allData.length ? (s.totalCTEs / allData.length).toFixed(1) : '0.0';
+  const pendingDrivers = allData.filter(r=>r.pendentes>0).length;
+  const statusPct = s.motoristas > 0 ? {
+    retornou: ((s.retornou/s.motoristas)*100).toFixed(1),
+    naoRet: ((s.naoRet/s.motoristas)*100).toFixed(1),
+    semMarca: ((s.semMarca/s.motoristas)*100).toFixed(1),
+    ocorr: ((s.comOcorr/s.motoristas)*100).toFixed(1)
+  } : {retornou:'0.0',naoRet:'0.0',semMarca:'0.0',ocorr:'0.0'};
 
   document.getElementById('mgrKpis').innerHTML = `
     <div class="kpi c-blue"><div class="kpi-accent"></div><div class="kpi-icon">📦</div>
@@ -283,8 +302,19 @@ function renderMgrDashboard() {
     <div class="kpi c-amber"><div class="kpi-accent"></div><div class="kpi-icon">📊</div>
       <div class="kpi-label">Produtividade Média</div><div class="kpi-value">${avgProd}%</div></div>
     <div class="kpi c-red"><div class="kpi-accent"></div><div class="kpi-icon">🚚</div>
-      <div class="kpi-label">Motoristas</div><div class="kpi-value">${s.motoristas}</div></div>
+      <div class="kpi-label">Motoristas</div><div class="kpi-value">${s.motoristas}</div><div class="kpi-sub">${avgCtes} CTEs por motorista</div></div>
+    <div class="kpi c-red"><div class="kpi-accent"></div><div class="kpi-icon">!</div>
+      <div class="kpi-label">Pendentes</div><div class="kpi-value">${totalPendentes}</div><div class="kpi-sub">${pendingDrivers} motoristas com saldo</div></div>
+    <div class="kpi c-blue"><div class="kpi-accent"></div><div class="kpi-icon">%</div>
+      <div class="kpi-label">Conclusão</div><div class="kpi-value">${pctConcl.toFixed(1)}%</div><div class="kpi-sub">${s.totalRealizadas} de ${s.totalCTEs} CTEs</div></div>
+    <div class="kpi c-green"><div class="kpi-accent"></div><div class="kpi-icon">1</div>
+      <div class="kpi-label">Melhor Produtividade</div><div class="kpi-value">${bestDriver ? bestDriver.prod.toFixed(1) : '0.0'}%</div><div class="kpi-sub">${escHtml(bestDriver ? bestDriver.nome : '-')}</div></div>
+    <div class="kpi c-amber"><div class="kpi-accent"></div><div class="kpi-icon">?</div>
+      <div class="kpi-label">Ocorrências</div><div class="kpi-value">${occTotal}</div><div class="kpi-sub">${s.comOcorr} motoristas afetados</div></div>
   `;
+
+  renderMgrSummary(s, statusPct, allData, mostVolume, avgCtes);
+  renderMgrTables(allData);
 
   // Charts
   const top10 = [...allData].sort((a,b)=>b.prod-a.prod).slice(0,10);
@@ -323,4 +353,77 @@ function renderMgrDashboard() {
     },
     options:{responsive:true,maintainAspectRatio:false,scales:{x:{stacked:true},y:{stacked:true,grid:{color:'rgba(0,0,0,.04)'}}},plugins:{legend:{position:'bottom'}}}
   });
+}
+
+function mgrStatusBlock(label, value, pct, color, detail) {
+  return `
+    <div class="mgr-status-card">
+      <div class="mgr-status-head"><span>${label}</span><strong>${value}</strong></div>
+      <div class="mgr-status-track"><span style="width:${pct}%;background:${color}"></span></div>
+      <div class="mgr-status-detail">${detail}</div>
+    </div>
+  `;
+}
+
+function renderMgrSummary(s, pct, allData, mostVolume, avgCtes) {
+  const el = document.getElementById('mgrSummary');
+  if(!el) return;
+  const lowProd = allData.filter(r=>r.prod < 50 && r.ctes > 0).length;
+  const fullProd = allData.filter(r=>r.prod >= 100 && r.ctes > 0).length;
+  const topOcc = Object.entries(s.occMap||{}).sort((a,b)=>b[1]-a[1]).slice(0,3);
+  const occHtml = topOcc.length
+    ? topOcc.map(([code,total]) => `<span class="chip chip-amber">${escHtml(code)}: ${total}</span>`).join('')
+    : '<span class="chip chip-green">Sem ocorrencias</span>';
+
+  el.innerHTML = `
+    <div class="chart-card mgr-summary-card">
+      <h3>Prestacao de Contas</h3>
+      ${mgrStatusBlock('Retornaram', s.retornou, pct.retornou, '#22C55E', `${pct.retornou}% da frota`)}
+      ${mgrStatusBlock('Nao retornaram', s.naoRet, pct.naoRet, '#EF4444', `${pct.naoRet}% da frota`)}
+      ${mgrStatusBlock('Aguardando', s.semMarca, pct.semMarca, '#F59E0B', `${pct.semMarca}% sem status`)}
+      ${mgrStatusBlock('Com ocorrencia', s.comOcorr, pct.ocorr, '#7C3AED', `${pct.ocorr}% com registro`)}
+    </div>
+    <div class="chart-card mgr-summary-card">
+      <h3>Leitura Gerencial</h3>
+      <div class="mgr-insight-row"><span>Maior volume</span><strong>${escHtml(mostVolume ? mostVolume.nome : '-')}</strong><em>${mostVolume ? mostVolume.ctes : 0} CTEs</em></div>
+      <div class="mgr-insight-row"><span>Media de CTEs</span><strong>${avgCtes}</strong><em>por motorista</em></div>
+      <div class="mgr-insight-row"><span>Produtividade 100%</span><strong>${fullProd}</strong><em>motoristas</em></div>
+      <div class="mgr-insight-row"><span>Abaixo de 50%</span><strong>${lowProd}</strong><em>motoristas</em></div>
+      <div class="mgr-occ-tags">${occHtml}</div>
+    </div>
+  `;
+}
+
+function renderMgrTables(allData) {
+  const attentionBody = document.getElementById('mgrAttentionBody');
+  const bestBody = document.getElementById('mgrBestBody');
+  if(!attentionBody || !bestBody) return;
+
+  const attention = [...allData]
+    .filter(r => r.pendentes > 0 || r.occQtd > 0 || !r.status)
+    .sort((a,b) => (b.pendentes - a.pendentes) || (b.occQtd - a.occQtd) || (a.prod - b.prod))
+    .slice(0,8);
+
+  const best = [...allData]
+    .filter(r => r.ctes > 0)
+    .sort((a,b) => (b.prod - a.prod) || (b.ctes - a.ctes))
+    .slice(0,8);
+
+  attentionBody.innerHTML = attention.length ? attention.map(r => `
+    <tr>
+      <td><span class="driver-name">${escHtml(r.nome)}</span><small>${r.occQtd ? `${r.occQtd} ocorr.` : (r.status || 'Sem status')}</small></td>
+      <td><span class="plate">${escHtml(r.placa||'--')}</span></td>
+      <td><strong style="color:var(--red)">${r.pendentes}</strong></td>
+      <td><span class="${r.prod>=80?'mgr-good':r.prod>=50?'mgr-warn':'mgr-bad'}">${r.prod.toFixed(1)}%</span></td>
+    </tr>
+  `).join('') : `<tr><td colspan="4" style="text-align:center;padding:24px;color:var(--green);font-weight:700">Tudo em dia.</td></tr>`;
+
+  bestBody.innerHTML = best.length ? best.map((r,i) => `
+    <tr>
+      <td><span class="driver-name">${i+1}. ${escHtml(r.nome)}</span><small>${r.realizadas} realizadas</small></td>
+      <td><span class="plate">${escHtml(r.placa||'--')}</span></td>
+      <td>${r.ctes}</td>
+      <td><span class="${r.prod>=80?'mgr-good':r.prod>=50?'mgr-warn':'mgr-bad'}">${r.prod.toFixed(1)}%</span></td>
+    </tr>
+  `).join('') : `<tr><td colspan="4" style="text-align:center;padding:24px;color:var(--text3)">Sem dados para ranking.</td></tr>`;
 }

@@ -858,8 +858,9 @@
 <div id="page-dashboard_mgr" class="page">
 <main>
   <div class="hist-toolbar"><h2>📈 Dashboard Gerencial</h2></div>
-  <div class="kpis" id="mgrKpis" style="grid-template-columns:repeat(4,1fr);margin-bottom:20px"></div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px">
+  <div class="kpis mgr-kpis" id="mgrKpis"></div>
+  <div class="mgr-summary-grid" id="mgrSummary" style="margin-bottom:18px"></div>
+  <div class="mgr-charts-grid" style="margin-bottom:18px">
     <div class="chart-card">
       <h3>Distribuição de CTEs por Motorista (Top 8)</h3>
       <div class="chart-wrap" style="height:220px"><canvas id="cMgrPie"></canvas></div>
@@ -872,6 +873,30 @@
   <div class="chart-card" style="margin-bottom:18px">
     <h3>Entregas x Pendências por Motorista (Top 15)</h3>
     <div class="chart-wrap" style="height:240px"><canvas id="cMgrStacked"></canvas></div>
+  </div>
+  <div class="mgr-tables-grid">
+    <div class="chart-card">
+      <h3>Pontos de Atenção</h3>
+      <div class="mgr-table-wrap">
+        <table class="mgr-mini-table">
+          <thead>
+            <tr><th>Motorista</th><th>Placa</th><th>Pend.</th><th>Prod.</th></tr>
+          </thead>
+          <tbody id="mgrAttentionBody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="chart-card">
+      <h3>Melhores Resultados</h3>
+      <div class="mgr-table-wrap">
+        <table class="mgr-mini-table">
+          <thead>
+            <tr><th>Motorista</th><th>Placa</th><th>CTEs</th><th>Prod.</th></tr>
+          </thead>
+          <tbody id="mgrBestBody"></tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </main>
 </div>
