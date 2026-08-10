@@ -191,6 +191,7 @@ input, select, textarea { font-family: inherit; }
   font-size:13px; font-weight:600; color:#B6C0D6;
   cursor:pointer; transition: all .15s; margin-bottom:2px;
   white-space:nowrap;
+  text-decoration:none;
 }
 .tab svg { flex-shrink:0; opacity:.85; }
 .tab:hover { background: rgba(255,255,255,.06); color:#fff; }

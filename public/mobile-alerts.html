@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0f172a">
+  <title>Alertas Lite | Portal de Conferencia</title>
+  <link rel="stylesheet" href="css/mobile-alerts.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="lite-header">
+      <div>
+        <span class="eyebrow">Versao mobile</span>
+        <h1>Alertas Lite</h1>
+      </div>
+      <div class="sync-pill" id="syncPill">Conectando...</div>
+    </header>
+
+    <section class="hero-status">
+      <div>
+        <span class="muted">Conferencia</span>
+        <strong id="currentDate">--/--/----</strong>
+      </div>
+      <button type="button" id="refreshBtn">Atualizar</button>
+    </section>
+
+    <main>
+      <section class="summary-grid" id="summaryGrid">
+        <div class="skeleton"></div>
+        <div class="skeleton"></div>
+        <div class="skeleton"></div>
+        <div class="skeleton"></div>
+      </section>
+
+      <section class="alert-tabs" aria-label="Filtros de alertas">
+        <button type="button" class="active" data-filter="all">Todos</button>
+        <button type="button" data-filter="critical">Criticos</button>
+        <button type="button" data-filter="whatsapp">WhatsApp</button>
+        <button type="button" data-filter="occurrence">Ocorrencias</button>
+      </section>
+
+      <section class="list-head">
+        <h2>Alertas operacionais</h2>
+        <span id="alertCount">0</span>
+      </section>
+
+      <section class="alert-list" id="alertList">
+        <div class="empty-state">Carregando alertas...</div>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-keys.web.js"></script>
+  <script src="js/mobile-alerts.js"></script>
+</body>
+</html>
